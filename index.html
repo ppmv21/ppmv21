@@ -123,6 +123,8 @@
     box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 2px 6px rgba(59,44,35,.08);
     transition:transform .18s ease, box-shadow .18s ease;
   }
+  .campione.linkata{cursor:pointer}
+  .campione.linkata:focus-visible{outline:2px solid var(--moro);outline-offset:3px}
   .campione:hover{
     transform:translateY(-3px);
     box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 8px 18px rgba(59,44,35,.15);
@@ -179,7 +181,23 @@
   footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
   footer a{color:var(--salvia-scuro);text-decoration:none;border-bottom:1px solid currentColor}
 
-  /* reveal allo scroll */
+  /* card cliccabile: apre il prodotto in una nuova scheda */
+function apriScheda(el){
+  const url = el.getAttribute("data-link");
+  if (url) window.open(url, "_blank", "noopener");
+}
+document.querySelectorAll(".campione.linkata").forEach(card => {
+  card.addEventListener("click", e => {
+    // se ho cliccato su un link vero (CTA WhatsApp o "vedi prodotto"), lascio fare a lui
+    if (e.target.closest("a")) return;
+    apriScheda(card);
+  });
+  card.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); apriScheda(card); }
+  });
+});
+
+/* reveal allo scroll */
   .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
   .reveal.vis{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){
@@ -463,8 +481,9 @@ CATEGORIE.forEach(cat => {
         const linkProdotto = it.link
           ? ` <a href="${it.link}" target="_blank" rel="noopener">vedi prodotto ↗</a>`
           : "";
+        const attr = it.link ? ` linkata" data-link="${it.link}" tabindex="0" role="link` : "";
         return `
-        <article class="campione reveal">
+        <article class="campione reveal${attr}">
           ${testa}
           <div class="corpo">
             <h3>${it.nome}</h3>
